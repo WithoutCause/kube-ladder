@@ -786,6 +786,8 @@ ETCD_NAME=$(hostname -s)
 
 生成 `etcd.service` 的 systemd 配置文件
 
+*请注意：对于使用公网主机（如云服务器等）的操作者， etcd 绑定的服务端口（即以下的 `${MASTER_IP}` ）应使用内网 IP 地址。*
+
 ```sh
 cat <<EOF | sudo tee /etc/systemd/system/etcd.service
 [Unit]
@@ -1013,7 +1015,7 @@ etcd-0               Healthy   {"health":"true"}
 
 本节将会配置 API Server 访问 Kubelet API 的 RBAC 授权。访问 Kubelet API 是获取 metrics、日志以及执行容器命令所必需的。
 
-> 这里设置 Kubeket `--authorization-mode` 为 `Webhook` 模式。Webhook 模式使用 [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API 来决定授权。
+> 这里设置 Kubelet `--authorization-mode` 为 `Webhook` 模式。Webhook 模式使用 [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API 来决定授权。
 
 创建 `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) 以允许请求 Kubelet API 和执行大部分来管理 Pods 的任务:
 
@@ -1128,7 +1130,7 @@ sudo mv kubectl kube-proxy kubelet /usr/local/bin/
 ```sh
 sudo cp worker-1-key.pem worker-1.pem /var/lib/kubelet/
 sudo cp worker-1.kubeconfig /var/lib/kubelet/kubeconfig
-sudo mv ca.pem /var/lib/kubernetes/
+sudo cp ca.pem /var/lib/kubernetes/
 sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 ```
 
